@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MT3 Seguridad Privada · Guardias, monitoreo y escoltas en CDMX y Edomex</title>
+<meta name="description" content="Guardias intramuros, monitoreo CCTV 24/7, control de accesos y escoltas para empresas en CDMX y Estado de México. Empezamos con un análisis de riesgo sin costo.">
+<meta property="og:title" content="MT3 Seguridad Privada">
+<meta property="og:description" content="Analizamos. Prevenimos. Protegemos. Solicita tu análisis de riesgo sin costo.">
+<meta property="og:image" content="https://images.unsplash.com/photo-1485230405346-71acb9518d9c?auto=format&fit=crop&w=1200&h=630&q=75">
+<meta name="theme-color" content="#070A0F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4 56 12v18c0 16-11 26-24 30C19 56 8 46 8 30V12z' fill='%230B1F3A' stroke='%23F2A900' stroke-width='4'/%3E%3Cpath d='m20 24 12 7 12-7M20 33l12 7 12-7M20 42l12 7 12-7' fill='none' stroke='%23F2A900' stroke-width='4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ===== Identidad MT3 · regla 60-30-10 =====
+     60% Negro táctico / azul comando (seriedad, autoridad, confianza)
+     30% Gris acero (tecnología, orden)
+     10% Ámbar alerta (vigilancia: solo botones y acentos) */
+  :root {
+    --black: #070A0F;
+    --ink: #0D131C;
+    --navy: #0B1F3A;
+    --navy-2: #12294A;
+    --steel: #8A96A8;
+    --line: rgba(138, 150, 168, .18);
+    --amber: #F2A900;
+    --amber-soft: rgba(242, 169, 0, .12);
+    --text: #EEF1F5;
+    --muted: #A9B3C1;
+    --radius: 14px;
+    --wrap: 1200px;
+    --slide-time: 6.5s;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--text);
+    font: 400 17px/1.6 "Inter", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  body.loading { overflow: hidden; }
+  a { color: inherit; text-decoration: none; }
+  img, svg { display: block; }
+  img { max-width: 100%; }
+  section[id] { scroll-margin-top: 76px; }
+  .wrap { width: min(var(--wrap), 100% - 32px); margin-inline: auto; }
+  h1, h2, h3, .display {
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: .01em;
+    text-transform: uppercase;
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font: 600 13px/1 "Inter", sans-serif;
+    letter-spacing: .18em; text-transform: uppercase;
+    color: var(--amber);
+  }
+  .eyebrow::before { content: ""; width: 28px; height: 2px; background: var(--amber); }
+  .icon { width: 28px; height: 28px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ===== Pantalla de carga ===== */
+  #loader {
+    position: fixed; inset: 0; z-index: 200; display: grid; place-items: center;
+    background: var(--black); transition: opacity .6s, visibility .6s;
+  }
+  #loader.done { opacity: 0; visibility: hidden; }
+  #loader svg { width: 96px; height: 96px; }
+  #loader path { stroke-dasharray: 240; stroke-dashoffset: 240; animation: draw 1.3s ease forwards; }
+  #loader path + path { animation-delay: .5s; }
+  #loader p { margin-top: 18px; text-align: center; font: 600 14px/1 "Barlow Condensed", sans-serif; letter-spacing: .4em; color: var(--steel); opacity: 0; animation: fade .6s .9s forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes fade { to { opacity: 1; } }
+
+  /* Barra de progreso del scroll */
+  #progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: var(--amber); z-index: 120; }
+
+  /* ===== Botones ===== */
+  .btn {
+    position: relative; overflow: hidden;
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 16px 28px; border-radius: 10px;
+    font: 600 15px/1 "Inter", sans-serif; letter-spacing: .02em;
+    border: 1px solid transparent; cursor: pointer;
+    transition: transform .25s, background .25s, border-color .25s, box-shadow .25s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary { background: var(--amber); color: var(--black); box-shadow: 0 10px 30px rgba(242,169,0,.25); }
+  .btn-primary:hover { background: #ffbb1f; box-shadow: 0 14px 38px rgba(242,169,0,.38); }
+  .btn-primary::after {
+    content: ""; position: absolute; top: 0; left: -80%; width: 50%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent);
+    transform: skewX(-20deg); animation: shine 4.5s ease-in-out infinite;
+  }
+  @keyframes shine { 0%, 70% { left: -80%; } 100% { left: 140%; } }
+  .btn-ghost { border-color: rgba(238,241,245,.35); color: var(--text); background: rgba(7,10,15,.35); backdrop-filter: blur(6px); }
+  .btn-ghost:hover { border-color: var(--text); }
+  .btn .icon { width: 20px; height: 20px; }
+
+  /* ===== Navegación ===== */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    border-bottom: 1px solid transparent;
+    transition: background .35s, border-color .35s, backdrop-filter .35s;
+  }
+  header.solid { background: rgba(7, 10, 15, .9); backdrop-filter: blur(12px); border-color: var(--line); }
+  .nav { display: flex; align-items: center; justify-content: space-between; height: 80px; gap: 24px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand svg { width: 42px; height: 42px; }
+  .brand-name { font: 700 27px/1 "Barlow Condensed", sans-serif; letter-spacing: .04em; }
+  .brand-name small { display: block; font: 500 10.5px/1.4 "Inter", sans-serif; letter-spacing: .24em; color: var(--steel); }
+  .nav-links { display: flex; gap: 30px; font-size: 15px; color: rgba(238,241,245,.8); }
+  .nav-links a { position: relative; padding: 6px 0; }
+  .nav-links a::after { content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; background: var(--amber); transform: scaleX(0); transform-origin: left; transition: transform .3s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav .btn { padding: 12px 18px; font-size: 14px; }
+
+  /* ===== HERO: banner grande con slider ===== */
+  .hero { position: relative; height: 100vh; height: 100svh; min-height: 660px; max-height: 1000px; overflow: hidden; background: var(--black); }
+  .slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity 1.2s ease, visibility 1.2s; }
+  .slide.active { opacity: 1; visibility: visible; z-index: 1; }
+  .slide .bg {
+    position: absolute; inset: 0; background-size: cover; background-position: center;
+    transform: scale(1.14); transition: transform 8s ease-out;
+  }
+  .slide.active .bg { transform: scale(1); }
+  .slide::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, rgba(7,10,15,.94) 0%, rgba(7,10,15,.72) 42%, rgba(11,31,58,.25) 100%),
+      linear-gradient(0deg, rgba(7,10,15,.9) 0%, transparent 35%);
+  }
+  .cap { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center; padding-top: 60px; }
+  .cap > * { max-width: 720px; opacity: 0; transform: translateY(34px); transition: opacity .9s ease, transform .9s ease; }
+  .slide.active .cap > * { opacity: 1; transform: none; }
+  .slide.active .cap > :nth-child(2) { transition-delay: .15s; }
+  .slide.active .cap > :nth-child(3) { transition-delay: .3s; }
+  .slide.active .cap > :nth-child(4) { transition-delay: .45s; }
+  .cap h1, .cap h2 { font-size: clamp(48px, 7.4vw, 104px); margin: 22px 0 22px; }
+  .cap em { font-style: normal; color: var(--amber); }
+  .cap p { font-size: clamp(17px, 1.6vw, 20px); color: rgba(238,241,245,.82); max-width: 580px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 36px; }
+
+  .hero-ui {
+    position: absolute; z-index: 5; left: 0; right: 0; bottom: 44px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  }
+  .dots { display: flex; gap: 10px; }
+  .dot { width: 54px; height: 4px; border: 0; border-radius: 4px; background: rgba(238,241,245,.25); cursor: pointer; overflow: hidden; }
+  .dot span { display: block; height: 100%; width: 0; background: var(--amber); }
+  .dot.active span { animation: fill var(--slide-time) linear forwards; }
+  .hero.paused .dot.active span { animation-play-state: paused; }
+  @keyframes fill { to { width: 100%; } }
+  .counter { font: 600 16px/1 "Barlow Condensed", sans-serif; letter-spacing: .2em; color: var(--steel); }
+  .counter b { color: var(--text); font-size: 22px; }
+  .arrows { display: flex; gap: 10px; }
+  .arrow {
+    width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+    background: rgba(7,10,15,.4); border: 1px solid rgba(238,241,245,.3); color: var(--text);
+    transition: background .25s, border-color .25s;
+  }
+  .arrow:hover { background: var(--amber); border-color: var(--amber); color: var(--black); }
+  .arrow .icon { width: 20px; height: 20px; }
+  .scroll-hint { position: absolute; z-index: 5; left: 50%; bottom: 40px; transform: translateX(-50%); width: 26px; height: 42px; border: 2px solid rgba(238,241,245,.45); border-radius: 14px; }
+  .scroll-hint::after { content: ""; position: absolute; left: 50%; top: 8px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px; background: var(--amber); animation: wheel 1.8s infinite; }
+  @keyframes wheel { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(14px); } }
+
+  /* ===== Cinta animada ===== */
+  .ticker { background: var(--amber); color: var(--black); overflow: hidden; white-space: nowrap; padding: 16px 0; }
+  .ticker-track { display: inline-flex; animation: marquee 32s linear infinite; }
+  .ticker span { font: 700 20px/1 "Barlow Condensed", sans-serif; letter-spacing: .12em; text-transform: uppercase; padding: 0 26px; display: inline-flex; align-items: center; gap: 52px; }
+  .ticker span::after { content: "◆"; font-size: 12px; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+
+  /* ===== Secciones ===== */
+  section.block { padding: 120px 0; }
+  .section-head { max-width: 760px; margin-bottom: 60px; }
+  .section-head.center { margin-inline: auto; text-align: center; }
+  .section-head.center .eyebrow::after { content: ""; width: 28px; height: 2px; background: var(--amber); }
+  .section-head h2 { font-size: clamp(40px, 4.8vw, 64px); margin: 18px 0 16px; }
+  .section-head h2 em { font-style: normal; color: var(--amber); }
+  .section-head p { color: var(--muted); font-size: 18px; }
+
+  /* Nosotros */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+  .about-media { position: relative; }
+  .about-media::before { content: ""; position: absolute; inset: 26px -26px -26px 26px; border: 2px solid var(--amber); border-radius: var(--radius); }
+  .about-media img { position: relative; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); filter: saturate(.9); }
+  .badge {
+    position: absolute; left: -28px; bottom: 44px; z-index: 2;
+    padding: 20px 24px; border-radius: 12px; background: var(--navy); border: 1px solid var(--line);
+    box-shadow: 0 24px 50px rgba(0,0,0,.5); animation: float 5s ease-in-out infinite;
+  }
+  .badge b { display: block; font: 700 30px/1 "Barlow Condensed", sans-serif; color: var(--amber); text-transform: uppercase; }
+  .badge span { font-size: 13.5px; color: var(--muted); }
+  @keyframes float { 50% { transform: translateY(-10px); } }
+  .values { display: grid; gap: 18px; margin: 34px 0 40px; }
+  .value { display: grid; grid-template-columns: 48px 1fr; gap: 16px; }
+  .value .ic { width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; background: var(--amber-soft); color: var(--amber); border: 1px solid rgba(242,169,0,.3); }
+  .value b { display: block; font-size: 17px; margin-bottom: 2px; }
+  .value span { color: var(--muted); font-size: 15px; }
+
+  /* Cifras */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: var(--radius); background: var(--ink); margin-top: 100px; }
+  .stat { padding: 34px 26px; text-align: center; border-left: 1px solid var(--line); }
+  .stat:first-child { border-left: 0; }
+  .stat b { display: block; font: 700 58px/1 "Barlow Condensed", sans-serif; color: var(--text); }
+  .stat b i { font-style: normal; color: var(--amber); }
+  .stat span { font-size: 14px; color: var(--steel); letter-spacing: .06em; text-transform: uppercase; }
+
+  /* Servicios con foto */
+  .services { background: var(--ink); border-block: 1px solid var(--line); }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .card {
+    border-radius: var(--radius); overflow: hidden; background: var(--black); border: 1px solid var(--line);
+    transition: transform .35s, border-color .35s, box-shadow .35s;
+  }
+  .card:hover { transform: translateY(-8px); border-color: rgba(242,169,0,.5); box-shadow: 0 30px 60px rgba(0,0,0,.45); }
+  .card-img { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s ease; }
+  .card:hover .card-img img { transform: scale(1.08); }
+  .card-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, var(--black), transparent 55%); }
+  .card-body { position: relative; padding: 0 28px 32px; margin-top: -30px; z-index: 1; }
+  .card .ic { width: 58px; height: 58px; border-radius: 12px; display: grid; place-items: center; background: var(--amber); color: var(--black); margin-bottom: 18px; box-shadow: 0 12px 26px rgba(242,169,0,.3); }
+  .card h3 { font-size: 27px; margin-bottom: 10px; }
+  .card p { color: var(--muted); font-size: 15.5px; }
+
+  /* Sectores con foto */
+  .sectors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .sector { position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); }
+  .sector img { width: 100%; height: 100%; object-fit: cover; transition: transform .9s ease, filter .5s; filter: grayscale(.35) brightness(.8); }
+  .sector:hover img { transform: scale(1.1); filter: none; }
+  .sector::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(7,10,15,.92), rgba(7,10,15,.1) 60%); }
+  .sector div { position: absolute; z-index: 1; left: 24px; right: 24px; bottom: 22px; }
+  .sector b { display: block; font: 700 30px/1 "Barlow Condensed", sans-serif; text-transform: uppercase; letter-spacing: .03em; }
+  .sector span { display: block; margin-top: 6px; font-size: 14.5px; color: var(--muted); max-height: 0; opacity: 0; overflow: hidden; transition: max-height .45s, opacity .45s; }
+  .sector:hover span { max-height: 60px; opacity: 1; }
+  .sector div::after { content: ""; display: block; margin-top: 12px; width: 42px; height: 3px; background: var(--amber); transition: width .45s; }
+  .sector:hover div::after { width: 90px; }
+
+  /* Método */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; counter-reset: step; position: relative; }
+  .step { position: relative; padding: 38px 32px 34px; border-radius: var(--radius); background: linear-gradient(180deg, var(--navy), var(--ink)); border: 1px solid var(--line); overflow: hidden; }
+  .step::before {
+    counter-increment: step; content: "0" counter(step);
+    font: 700 70px/1 "Barlow Condensed", sans-serif; color: transparent;
+    -webkit-text-stroke: 1px rgba(242,169,0,.6);
+    position: absolute; top: 22px; right: 24px;
+  }
+  .step::after { content: ""; position: absolute; left: 0; bottom: 0; height: 3px; width: 0; background: var(--amber); transition: width .6s; }
+  .step:hover::after { width: 100%; }
+  .step h3 { font-size: 29px; margin: 10px 0 12px; }
+  .step p { color: var(--muted); font-size: 16px; }
+  .step .icon { color: var(--amber); width: 36px; height: 36px; }
+
+  /* Análisis de riesgo con radar */
+  .risk {
+    background:
+      radial-gradient(700px 420px at 0% 0%, rgba(242,169,0,.08), transparent 60%),
+      linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 56px 56px,
+      linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 56px 56px,
+      linear-gradient(135deg, var(--navy) 0%, var(--black) 75%);
+    border-block: 1px solid var(--line);
+  }
+  .risk-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 64px; align-items: center; }
+  .checklist { display: grid; gap: 12px; margin: 34px 0 36px; }
+  .check { display: grid; grid-template-columns: 44px 1fr; gap: 16px; align-items: start; padding: 16px 20px; border-radius: 12px; background: rgba(7,10,15,.6); border: 1px solid var(--line); transition: border-color .3s, transform .3s; }
+  .check:hover { border-color: rgba(242,169,0,.5); transform: translateX(6px); }
+  .check .num { width: 44px; height: 44px; border-radius: 10px; display: grid; place-items: center; font: 700 20px/1 "Barlow Condensed", sans-serif; color: var(--black); background: var(--amber); }
+  .check b { display: block; font-size: 16px; margin-bottom: 2px; }
+  .check span { font-size: 14.5px; color: var(--steel); }
+  .radar-box { position: relative; justify-self: center; width: min(470px, 100%); }
+  .radar { position: relative; aspect-ratio: 1; border-radius: 50%; border: 1px solid rgba(138,150,168,.35); background: radial-gradient(circle, rgba(18,41,74,.7), rgba(7,10,15,.5) 70%); box-shadow: 0 0 0 10px rgba(11,31,58,.4), 0 40px 120px rgba(0,0,0,.6); overflow: hidden; }
+  .radar svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .sweep { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 0deg, rgba(242,169,0,.4), rgba(242,169,0,0) 22%, transparent); animation: spin 4.5s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .blip { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: var(--amber); animation: ping 2.2s ease-out infinite; }
+  .blip.ok { background: #5FD3A2; animation-name: ping-ok; }
+  @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(242,169,0,.6); } 100% { box-shadow: 0 0 0 18px rgba(242,169,0,0); } }
+  @keyframes ping-ok { 0% { box-shadow: 0 0 0 0 rgba(95,211,162,.5); } 100% { box-shadow: 0 0 0 18px rgba(95,211,162,0); } }
+  .tag { position: absolute; z-index: 2; padding: 12px 16px; border-radius: 12px; background: rgba(13,19,28,.94); border: 1px solid var(--line); font-size: 13px; line-height: 1.35; color: var(--muted); box-shadow: 0 18px 40px rgba(0,0,0,.45); animation: float 5s ease-in-out infinite; }
+  .tag b { display: block; color: var(--text); font-size: 14px; }
+  .tag i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: var(--amber); }
+  .tag i.ok { background: #5FD3A2; }
+  .tag-1 { top: 6%; left: -8%; }
+  .tag-2 { bottom: 10%; right: -6%; animation-delay: -2.5s; }
+
+  /* Banda con parallax */
+  .band { position: relative; padding: 140px 0; text-align: center; background: url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=70") center / cover fixed; }
+  .band::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,10,15,.92), rgba(11,31,58,.82)); }
+  .band .wrap { position: relative; }
+  .band h2 { font-size: clamp(42px, 6vw, 84px); max-width: 980px; margin: 18px auto 20px; }
+  .band h2 em { font-style: normal; color: var(--amber); }
+  .band p { color: var(--muted); font-size: 19px; max-width: 620px; margin: 0 auto; }
+  .band .ctas { justify-content: center; }
+
+  /* Contacto */
+  .contact-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 60px; align-items: start; }
+  .contact-list { display: grid; gap: 14px; margin-top: 32px; }
+  .contact-item { display: flex; align-items: center; gap: 16px; padding: 20px 22px; border-radius: 12px; border: 1px solid var(--line); background: var(--ink); transition: border-color .25s, transform .25s; }
+  .contact-item:hover { border-color: var(--amber); transform: translateX(6px); }
+  .contact-item .ic { width: 48px; height: 48px; flex: none; border-radius: 12px; display: grid; place-items: center; background: var(--amber-soft); color: var(--amber); }
+  .contact-item small { display: block; font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--steel); }
+  .contact-item b { font: 600 23px/1.2 "Barlow Condensed", sans-serif; letter-spacing: .04em; word-break: break-word; }
+  form { padding: 40px; border-radius: 18px; background: linear-gradient(180deg, var(--navy), var(--ink)); border: 1px solid var(--line); box-shadow: 0 40px 80px rgba(0,0,0,.4); }
+  form h3 { font-size: 34px; margin-bottom: 6px; }
+  form > p { color: var(--muted); font-size: 15px; margin-bottom: 26px; }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display: grid; gap: 7px; }
+  .field.full { grid-column: 1 / -1; }
+  label { font-size: 13px; font-weight: 500; color: var(--muted); }
+  input, select, textarea { width: 100%; padding: 14px 16px; border-radius: 10px; background: rgba(7,10,15,.7); border: 1px solid var(--line); color: var(--text); font: 400 15.5px/1.4 "Inter", sans-serif; transition: border-color .2s, box-shadow .2s; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--amber); box-shadow: 0 0 0 4px rgba(242,169,0,.15); }
+  textarea { min-height: 110px; resize: vertical; }
+  .consent { display: flex; gap: 10px; align-items: flex-start; margin-top: 18px; font-size: 13.5px; color: var(--muted); }
+  .consent input { width: 18px; height: 18px; margin-top: 2px; flex: none; accent-color: var(--amber); }
+  .consent a { color: var(--amber); text-decoration: underline; }
+  form .btn { width: 100%; margin-top: 20px; padding: 18px; font-size: 16px; }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--line); background: var(--ink); padding: 64px 0 30px; }
+  .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; padding-bottom: 40px; border-bottom: 1px solid var(--line); }
+  .foot-grid p { color: var(--steel); font-size: 15px; margin-top: 16px; max-width: 340px; }
+  .foot-grid h4 { font: 700 18px/1 "Barlow Condensed", sans-serif; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 18px; }
+  .foot-grid ul { list-style: none; display: grid; gap: 10px; color: var(--steel); font-size: 15px; }
+  .foot-grid li a:hover { color: var(--amber); }
+  .foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; padding-top: 26px; color: var(--steel); font-size: 13.5px; }
+  .foot-bottom a { text-decoration: underline; }
+  .motto { font: 600 14px/1 "Barlow Condensed", sans-serif; letter-spacing: .3em; text-transform: uppercase; color: var(--amber); }
+
+  /* WhatsApp flotante */
+  .wa-float { position: fixed; right: 20px; bottom: 20px; z-index: 90; width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; background: #25D366; color: #fff; box-shadow: 0 14px 34px rgba(0,0,0,.45); transition: transform .2s; }
+  .wa-float::before { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid #25D366; animation: ring 2.4s ease-out infinite; }
+  @keyframes ring { to { transform: scale(1.6); opacity: 0; } }
+  .wa-float:hover { transform: scale(1.08); }
+  .wa-float svg { width: 31px; height: 31px; fill: currentColor; }
+
+  /* Aparición al hacer scroll */
+  .reveal { opacity: 0; transform: translateY(36px); transition: opacity .8s ease, transform .8s ease; }
+  .reveal.left { transform: translateX(-46px); }
+  .reveal.right { transform: translateX(46px); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 1020px) {
+    .about-grid, .risk-grid, .contact-grid { grid-template-columns: 1fr; gap: 56px; }
+    .about-media { max-width: 520px; }
+    .cards, .sectors, .steps { grid-template-columns: 1fr 1fr; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .stat:nth-child(3) { border-left: 0; }
+    .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
+    .radar-box { width: min(400px, 86%); }
+    .foot-grid { grid-template-columns: 1fr 1fr; }
+    .foot-grid > :first-child { grid-column: 1 / -1; }
+  }
+  @media (max-width: 880px) { .nav-links { display: none; } .scroll-hint { display: none; } }
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    section.block { padding: 84px 0; }
+    .hero { min-height: 620px; }
+    .cap { justify-content: flex-end; padding-bottom: 130px; }
+    .ctas .btn { width: 100%; }
+    .hero-ui { bottom: 28px; }
+    .arrows { display: none; }
+    .dot { width: 36px; }
+    .cards, .sectors, .steps, .fields, .foot-grid { grid-template-columns: 1fr; }
+    .stats { margin-top: 70px; }
+    .stat b { font-size: 46px; }
+    .about-media::before { inset: 16px -12px -16px 16px; }
+    .badge { left: 12px; bottom: 20px; padding: 14px 18px; }
+    .badge b { font-size: 24px; }
+    .tag { font-size: 12px; padding: 10px 12px; }
+    .tag-1 { left: -4%; top: 0; } .tag-2 { right: -4%; bottom: 2%; }
+    form { padding: 28px 20px; }
+    .nav .btn span { display: none; }
+    .brand-name small { display: none; }
+    .band { background-attachment: scroll; padding: 100px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal, .cap > * { opacity: 1; transform: none; }
+    #loader { display: none; }
+  }
+</style>
+</head>
+<body class="loading">
+
+<div id="loader" aria-hidden="true">
+  <div>
+    <svg viewBox="0 0 64 64">
+      <path d="M32 4 56 12v18c0 16-11 26-24 30C19 56 8 46 8 30V12z" fill="none" stroke="#F2A900" stroke-width="2.5"/>
+      <path d="m20 24 12 7 12-7M20 33l12 7 12-7M20 42l12 7 12-7" fill="none" stroke="#F2A900" stroke-width="3" stroke-linejoin="round"/>
+    </svg>
+    <p>MT3</p>
+  </div>
+</div>
+<div id="progress"></div>
+
+<!-- Iconos reutilizables -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 20 5v6c0 5.2-3.4 9.4-8 11-4.6-1.6-8-5.8-8-11V5z"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/></symbol>
+    <symbol id="i-guard" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 21c0-3.9 3.1-6.5 7-6.5s7 2.6 7 6.5"/><path d="M8.2 5.6c1-.9 2.3-1.4 3.8-1.4s2.8.5 3.8 1.4"/></symbol>
+    <symbol id="i-cam" viewBox="0 0 24 24"><path d="M3 7.5 15.5 4l2 5.5L5 13z"/><path d="m17.5 8 3.5-1v4l-3 .5"/><path d="M8 12.2 9 17H4"/><path d="M4 14v6"/></symbol>
+    <symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 18.5 5.5"/><circle cx="12" cy="12" r="1"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.5"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M4 16v-3.5L6 7h12l2 5.5V16"/><path d="M3 16h18v3h-3v-1.5H6V19H3z"/><circle cx="7.5" cy="13" r=".8"/><circle cx="16.5" cy="13" r=".8"/></symbol>
+    <symbol id="i-crowd" viewBox="0 0 24 24"><circle cx="12" cy="7" r="2.6"/><circle cx="5" cy="9.5" r="2"/><circle cx="19" cy="9.5" r="2"/><path d="M7 20c0-3 2.2-5 5-5s5 2 5 5"/><path d="M2 19c0-2.2 1.3-3.7 3-4M22 19c0-2.2-1.3-3.7-3-4"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></symbol>
+    <symbol id="i-plan" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="18" rx="2"/><path d="M9 3.5h6v3H9z"/><path d="m8.5 12 1.5 1.5 3-3M8.5 17h7"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 3h3.5l1.8 4.5-2.3 1.4a11 11 0 0 0 7.1 7.1l1.4-2.3L21 15.5V19a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/><path d="M9 11h6M9 14h4"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  </defs>
+</svg>
+
+<header id="top">
+  <nav class="wrap nav">
+    <a href="#inicio" class="brand" aria-label="MT3 Seguridad Privada, inicio">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M32 4 56 12v18c0 16-11 26-24 30C19 56 8 46 8 30V12z" fill="#0B1F3A" stroke="#F2A900" stroke-width="3"/>
+        <path d="m20 24 12 7 12-7M20 33l12 7 12-7M20 42l12 7 12-7" fill="none" stroke="#F2A900" stroke-width="3.4" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-name">MT3<small>SEGURIDAD PRIVADA</small></span>
+    </a>
+    <div class="nav-links">
+      <a href="#nosotros">Nosotros</a>
+      <a href="#servicios">Servicios</a>
+      <a href="#sectores">Sectores</a>
+      <a href="#analisis">Análisis de riesgo</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+    <a href="#contacto" class="btn btn-primary"><svg class="icon"><use href="#i-search"/></svg><span>Análisis gratis</span></a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ===== BANNER PRINCIPAL ===== -->
+  <section class="hero" id="inicio" aria-roledescription="carrusel">
+    <div class="slide active">
+      <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1485230405346-71acb9518d9c?auto=format&fit=crop&w=1920&q=75')"></div>
+      <div class="wrap cap">
+        <span class="eyebrow">Seguridad privada · CDMX y Edomex</span>
+        <h1>¿Sabes cuáles son los <em>puntos débiles</em> de tu empresa?</h1>
+        <p>Guardias intramuros, monitoreo 24/7 y escoltas para empresas que no pueden darse el lujo de un robo. Empezamos con un análisis de riesgo sin costo.</p>
+        <div class="ctas">
+          <a href="#contacto" class="btn btn-primary">Solicitar análisis de riesgo <svg class="icon"><use href="#i-arrow"/></svg></a>
+          <a href="tel:+525620919982" class="btn btn-ghost"><svg class="icon"><use href="#i-phone"/></svg> 562 091 9982</a>
+        </div>
+      </div>
+    </div>
+    <div class="slide">
+      <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1557597774-9d273605dfa9?auto=format&fit=crop&w=1920&q=75')"></div>
+      <div class="wrap cap">
+        <span class="eyebrow">Monitoreo CCTV 24/7</span>
+        <h2>Tus cámaras no sirven si <em>nadie las ve</em></h2>
+        <p>Ponemos un monitorista dedicado a tus cámaras las 24 horas para detectar robo de mercancía, intrusos y movimientos sospechosos en tiempo real.</p>
+        <div class="ctas">
+          <a href="#servicios" class="btn btn-primary">Ver servicios <svg class="icon"><use href="#i-arrow"/></svg></a>
+          <a href="https://wa.me/527203699224" target="_blank" rel="noopener" class="btn btn-ghost"><svg class="icon"><use href="#i-chat"/></svg> WhatsApp</a>
+        </div>
+      </div>
+    </div>
+    <div class="slide">
+      <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1735620731955-b047a7122892?auto=format&fit=crop&w=1920&q=75')"></div>
+      <div class="wrap cap">
+        <span class="eyebrow">Escoltas y traslados</span>
+        <h2>Llega seguro, <em>siempre</em></h2>
+        <p>Protección ejecutiva y traslados de directivos, valores y mercancía con rutas planeadas y personal entrenado.</p>
+        <div class="ctas">
+          <a href="#contacto" class="btn btn-primary">Cotizar escolta <svg class="icon"><use href="#i-arrow"/></svg></a>
+          <a href="tel:+525620919982" class="btn btn-ghost"><svg class="icon"><use href="#i-phone"/></svg> Llamar ahora</a>
+        </div>
+      </div>
+    </div>
+    <div class="slide">
+      <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1618371731836-2b9bff9ac72a?auto=format&fit=crop&w=1920&q=75')"></div>
+      <div class="wrap cap">
+        <span class="eyebrow">Personal capacitado</span>
+        <h2>Guardias que <em>imponen</em> respeto</h2>
+        <p>Elementos seleccionados, uniformados y supervisados en cada turno. Discreción total con la información de tu empresa.</p>
+        <div class="ctas">
+          <a href="#nosotros" class="btn btn-primary">Conócenos <svg class="icon"><use href="#i-arrow"/></svg></a>
+          <a href="#contacto" class="btn btn-ghost"><svg class="icon"><use href="#i-mail"/></svg> Contacto</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap hero-ui">
+      <div class="dots" role="tablist" aria-label="Diapositivas">
+        <button class="dot active" aria-label="Diapositiva 1"><span></span></button>
+        <button class="dot" aria-label="Diapositiva 2"><span></span></button>
+        <button class="dot" aria-label="Diapositiva 3"><span></span></button>
+        <button class="dot" aria-label="Diapositiva 4"><span></span></button>
+      </div>
+      <div class="counter"><b id="cur">01</b> / 04</div>
+      <div class="arrows">
+        <button class="arrow" id="prev" aria-label="Anterior"><svg class="icon"><use href="#i-left"/></svg></button>
+        <button class="arrow" id="next" aria-label="Siguiente"><svg class="icon"><use href="#i-arrow"/></svg></button>
+      </div>
+    </div>
+    <div class="scroll-hint" aria-hidden="true"></div>
+  </section>
+
+  <!-- ===== CINTA ===== -->
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+      <span>Guardias intramuros</span><span>Monitoreo CCTV 24/7</span><span>Control de accesos</span><span>Escoltas</span><span>Análisis de riesgo</span><span>Seguridad para eventos</span>
+      <span>Guardias intramuros</span><span>Monitoreo CCTV 24/7</span><span>Control de accesos</span><span>Escoltas</span><span>Análisis de riesgo</span><span>Seguridad para eventos</span>
+    </div>
+  </div>
+
+  <!-- ===== NOSOTROS ===== -->
+  <section class="block" id="nosotros">
+    <div class="wrap">
+      <div class="about-grid">
+        <div class="about-media reveal left">
+          <img src="https://images.unsplash.com/photo-1517913451214-e22ce660e086?auto=format&fit=crop&w=900&h=1125&q=75" alt="Guardia de seguridad uniformado en guardia" loading="lazy">
+          <div class="badge"><b>Sin costo</b><span>Análisis de riesgo inicial</span></div>
+        </div>
+        <div class="reveal right">
+          <span class="eyebrow">Nosotros</span>
+          <div class="section-head" style="margin-bottom:0">
+            <h2>Seguridad con <em>estrategia</em>, no solo con uniformes</h2>
+            <p>En MT3 no mandamos guardias al azar. Estudiamos tu operación, detectamos dónde estás expuesto y diseñamos un esquema a la medida de tu empresa.</p>
+          </div>
+          <div class="values">
+            <div class="value"><div class="ic"><svg class="icon"><use href="#i-search"/></svg></div><div><b>Diagnóstico primero</b><span>Te decimos exactamente qué necesitas antes de cotizar.</span></div></div>
+            <div class="value"><div class="ic"><svg class="icon"><use href="#i-eye"/></svg></div><div><b>Supervisión constante</b><span>Cada turno tiene un responsable que responde por él.</span></div></div>
+            <div class="value"><div class="ic"><svg class="icon"><use href="#i-shield"/></svg></div><div><b>Discreción absoluta</b><span>Tu información y los motivos de tu seguridad se quedan entre nosotros.</span></div></div>
+          </div>
+          <a href="#contacto" class="btn btn-primary">Hablar con un asesor <svg class="icon"><use href="#i-arrow"/></svg></a>
+        </div>
+      </div>
+
+      <div class="stats reveal">
+        <div class="stat"><b><span data-count="24">0</span><i>/7</i></b><span>Monitoreo</span></div>
+        <div class="stat"><b><span data-count="365">0</span></b><span>Días al año</span></div>
+        <div class="stat"><b><span data-count="5">0</span></b><span>Puntos de análisis</span></div>
+        <div class="stat"><b><span data-count="6">0</span><i>+</i></b><span>Sectores atendidos</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICIOS ===== -->
+  <section class="block services" id="servicios">
+    <div class="wrap">
+      <div class="section-head center reveal">
+        <span class="eyebrow">Servicios</span>
+        <h2>Protección completa, <em>un solo responsable</em></h2>
+        <p>Desde un guardia en el acceso hasta un esquema completo con monitoreo y escoltas.</p>
+      </div>
+      <div class="cards">
+        <article class="card reveal">
+          <div class="card-img"><img src="https://images.unsplash.com/photo-1652739758426-56a564265f9e?auto=format&fit=crop&w=800&h=500&q=70" alt="Guardia de seguridad con chaleco" loading="lazy"></div>
+          <div class="card-body"><div class="ic"><svg class="icon"><use href="#i-guard"/></svg></div><h3>Guardias intramuros</h3><p>Personal capacitado, uniformado y supervisado para cuidar tus instalaciones día y noche.</p></div>
+        </article>
+        <article class="card reveal">
+          <div class="card-img"><img src="https://images.unsplash.com/photo-1618482914248-29272d021005?auto=format&fit=crop&w=800&h=500&q=70" alt="Poste con cámaras de vigilancia" loading="lazy"></div>
+          <div class="card-body"><div class="ic"><svg class="icon"><use href="#i-cam"/></svg></div><h3>Monitoreo CCTV 24/7</h3><p>¿Ya tienes cámaras? Te ponemos un monitorista las 24 horas para que alguien de verdad las vea.</p></div>
+        </article>
+        <article class="card reveal">
+          <div class="card-img"><img src="https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=800&h=500&q=70" alt="Puerta de bóveda de seguridad" loading="lazy"></div>
+          <div class="card-body"><div class="ic"><svg class="icon"><use href="#i-radar"/></svg></div><h3>Análisis de riesgo</h3><p>Diagnóstico de vulnerabilidades, perímetros y procedimientos, con recomendaciones concretas.</p></div>
+        </article>
+        <article class="card reveal">
+          <div class="card-img"><img src="https://images.unsplash.com/photo-1762474293029-6a7f3698312c?auto=format&fit=crop&w=800&h=500&q=70" alt="Guardia en el acceso de un edificio" loading="lazy"></div>
+          <div class="card-body"><div class="ic"><svg class="icon"><use href="#i-key"/></svg></div><h3>Control de accesos</h3><p>Registro de visitantes, proveedores y vehículos. Nadie entra sin que lo sepas.</p></div>
+        </article>
+        <article class="card reveal">
+          <div class="card-img"><img src="https://images.unsplash.com/photo-1618371690240-e0d46eead4b8?auto=format&fit=crop&w=800&h=500&q=70" alt="Escolta con traje y auricular" loading="lazy"></div>
+          <div class="card-body"><div class="ic"><svg class="icon"><use href="#i-car"/></svg></div><h3>Escoltas y protección ejecutiva</h3><p>Traslados seguros para directivos, valores y mercancía, con rutas planeadas.</p></div>
+        </article>
+        <article class="card reveal">
+          <div class="card-img"><img src="https://images.unsplash.com/photo-1566245024852-04fbf7842ce9?auto=format&fit=crop&w=800&h=500&q=70" alt="Guardia de seguridad entre asistentes de un evento" loading="lazy"></div>
+          <div class="card-body"><div class="ic"><svg class="icon"><use href="#i-crowd"/></svg></div><h3>Seguridad para eventos</h3><p>Control de multitudes y accesos en eventos corporativos, conciertos y exposiciones.</p></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTORES ===== -->
+  <section class="block" id="sectores">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Sectores</span>
+        <h2>Sabemos dónde se pierde el dinero <em>en tu giro</em></h2>
+        <p>Cada industria tiene sus riesgos. Los conocemos.</p>
+      </div>
+      <div class="sectors">
+        <div class="sector reveal"><img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=800&h=600&q=70" alt="Obra en construcción" loading="lazy"><div><b>Constructoras</b><span>Resguardo de material, maquinaria y control de personal en obra.</span></div></div>
+        <div class="sector reveal"><img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&h=600&q=70" alt="Hotel con alberca" loading="lazy"><div><b>Hoteles</b><span>Seguridad discreta para huéspedes, accesos y estacionamientos.</span></div></div>
+        <div class="sector reveal"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&h=600&q=70" alt="Restaurante" loading="lazy"><div><b>Bares y restaurantes</b><span>Control de acceso, prevención de riñas y cierre seguro.</span></div></div>
+        <div class="sector reveal"><img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=800&h=600&q=70" alt="Recepción de hospital" loading="lazy"><div><b>Hospitales</b><span>Vigilancia 24/7 de áreas restringidas, visitas y farmacia.</span></div></div>
+        <div class="sector reveal"><img src="https://images.unsplash.com/photo-1781967653059-f34f7f4f7365?auto=format&fit=crop&w=800&h=600&q=70" alt="Plaza comercial" loading="lazy"><div><b>Plazas comerciales</b><span>Rondines, pasillos, estacionamientos y apoyo a locatarios.</span></div></div>
+        <div class="sector reveal"><img src="https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=800&h=600&q=70" alt="Bodega con anaqueles" loading="lazy"><div><b>Bodegas e industria</b><span>Freno al robo hormiga, control de carga y descarga.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MÉTODO ===== -->
+  <section class="block services" id="metodo">
+    <div class="wrap">
+      <div class="section-head center reveal">
+        <span class="eyebrow">Cómo trabajamos</span>
+        <h2>Analizamos. Prevenimos. <em>Protegemos.</em></h2>
+        <p>No te vendemos guardias por kilo. Primero entendemos tu riesgo y después te decimos cuántos elementos necesitas y dónde.</p>
+      </div>
+      <div class="steps">
+        <article class="step reveal"><svg class="icon"><use href="#i-search"/></svg><h3>Análisis de riesgo</h3><p>Recorremos tus instalaciones y detectamos accesos vulnerables, puntos ciegos y fallas en los procedimientos.</p></article>
+        <article class="step reveal"><svg class="icon"><use href="#i-plan"/></svg><h3>Plan a la medida</h3><p>Te entregamos una propuesta clara: cuántos guardias por turno, qué áreas cubren y qué tecnología conviene.</p></article>
+        <article class="step reveal"><svg class="icon"><use href="#i-shield"/></svg><h3>Operación y supervisión</h3><p>Desplegamos al personal, supervisamos los turnos y te reportamos. Tú te enfocas en tu negocio.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ANÁLISIS DE RIESGO ===== -->
+  <section class="block risk" id="analisis">
+    <div class="wrap risk-grid">
+      <div class="reveal left">
+        <span class="eyebrow">Sin costo · Sin compromiso</span>
+        <div class="section-head" style="margin-bottom:0">
+          <h2>Tu análisis de riesgo, <em>antes</em> de que sea tarde</h2>
+          <p>Vamos a tus instalaciones y te decimos qué está expuesto, aunque no nos contrates.</p>
+        </div>
+        <div class="checklist">
+          <div class="check"><span class="num">1</span><div><b>Evaluación de instalaciones</b><span>Revisión física de áreas internas y externas.</span></div></div>
+          <div class="check"><span class="num">2</span><div><b>Puntos vulnerables</b><span>Riesgos actuales y potenciales, uno por uno.</span></div></div>
+          <div class="check"><span class="num">3</span><div><b>Accesos y perímetros</b><span>Entradas, salidas y zonas críticas.</span></div></div>
+          <div class="check"><span class="num">4</span><div><b>Procedimientos</b><span>Cómo responde tu gente ante un incidente.</span></div></div>
+          <div class="check"><span class="num">5</span><div><b>Propuesta de protección</b><span>El esquema exacto que necesitas y su costo.</span></div></div>
+        </div>
+        <a href="#contacto" class="btn btn-primary">Agendar visita <svg class="icon"><use href="#i-arrow"/></svg></a>
+      </div>
+
+      <div class="radar-box reveal right" aria-hidden="true">
+        <div class="radar">
+          <svg viewBox="0 0 100 100">
+            <g fill="none" stroke="rgba(138,150,168,.28)" stroke-width=".35">
+              <circle cx="50" cy="50" r="12"/><circle cx="50" cy="50" r="24"/>
+              <circle cx="50" cy="50" r="36"/><circle cx="50" cy="50" r="48"/>
+              <path d="M50 2v96M2 50h96"/>
+            </g>
+            <g fill="none" stroke="rgba(238,241,245,.55)" stroke-width=".6">
+              <rect x="30" y="32" width="40" height="36" rx="1"/>
+              <path d="M30 50h14M56 32v14M56 56v12M44 68v-6"/>
+            </g>
+          </svg>
+          <div class="sweep"></div>
+          <span class="blip" style="top:30%;left:66%"></span>
+          <span class="blip" style="top:66%;left:28%"></span>
+          <span class="blip ok" style="top:47%;left:47%"></span>
+          <span class="blip ok" style="top:70%;left:62%"></span>
+        </div>
+        <div class="tag tag-1"><b><i></i>Acceso de carga</b>Sin control de visitantes</div>
+        <div class="tag tag-2"><b><i class="ok"></i>Plan de cobertura</b>Guardias por turno y áreas</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BANDA ===== -->
+  <section class="band">
+    <div class="wrap reveal">
+      <span class="eyebrow">Prevenir es proteger</span>
+      <h2>Prevenir sale más barato que <em>reponer</em></h2>
+      <p>Un solo robo cuesta más que meses de seguridad bien planeada. Agenda hoy tu análisis sin costo.</p>
+      <div class="ctas">
+        <a href="#contacto" class="btn btn-primary">Solicitar análisis <svg class="icon"><use href="#i-arrow"/></svg></a>
+        <a href="https://wa.me/527203699224" target="_blank" rel="noopener" class="btn btn-ghost"><svg class="icon"><use href="#i-chat"/></svg> Escríbenos por WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACTO ===== -->
+  <section class="block" id="contacto">
+    <div class="wrap contact-grid">
+      <div class="reveal left">
+        <span class="eyebrow">Contacto</span>
+        <div class="section-head" style="margin-bottom:0">
+          <h2>Hablemos de tu <em>seguridad</em></h2>
+          <p>Atención directa con el responsable. Tu información se maneja con total confidencialidad.</p>
+        </div>
+        <div class="contact-list">
+          <a class="contact-item" href="tel:+525620919982"><div class="ic"><svg class="icon"><use href="#i-phone"/></svg></div><div><small>Llámanos</small><b>562 091 9982</b></div></a>
+          <a class="contact-item" href="https://wa.me/527203699224" target="_blank" rel="noopener"><div class="ic"><svg class="icon"><use href="#i-chat"/></svg></div><div><small>WhatsApp</small><b>720 369 9224</b></div></a>
+          <a class="contact-item" href="mailto:seguridadprivadamt3@gmail.com"><div class="ic"><svg class="icon"><use href="#i-mail"/></svg></div><div><small>Correo</small><b style="font-size:19px">seguridadprivadamt3@gmail.com</b></div></a>
+        </div>
+      </div>
+
+      <form id="form" class="reveal right">
+        <h3>Solicita tu análisis</h3>
+        <p>Llena el formulario y se abre WhatsApp con tu mensaje listo para enviar.</p>
+        <div class="fields">
+          <div class="field"><label for="nombre">Nombre</label><input id="nombre" name="nombre" required autocomplete="name"></div>
+          <div class="field"><label for="empresa">Empresa</label><input id="empresa" name="empresa" required autocomplete="organization"></div>
+          <div class="field"><label for="giro">Giro</label>
+            <select id="giro" name="giro">
+              <option>Constructora</option><option>Hotel</option><option>Bar o restaurante</option>
+              <option>Hospital</option><option>Plaza comercial</option><option>Bodega o industria</option><option>Otro</option>
+            </select>
+          </div>
+          <div class="field"><label for="zona">Alcaldía o municipio</label><input id="zona" name="zona" placeholder="Ej. Naucalpan"></div>
+          <div class="field full"><label for="mensaje">¿Qué te preocupa?</label><textarea id="mensaje" name="mensaje" placeholder="Ej. robo hormiga en bodega, control de proveedores…"></textarea></div>
+        </div>
+        <label class="consent"><input type="checkbox" required> <span>He leído y acepto el <a href="aviso-privacidad.html" target="_blank">Aviso de Privacidad</a>.</span></label>
+        <button class="btn btn-primary" type="submit">Enviar por WhatsApp <svg class="icon"><use href="#i-arrow"/></svg></button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <a href="#inicio" class="brand">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 4 56 12v18c0 16-11 26-24 30C19 56 8 46 8 30V12z" fill="#0B1F3A" stroke="#F2A900" stroke-width="3"/>
+            <path d="m20 24 12 7 12-7M20 33l12 7 12-7M20 42l12 7 12-7" fill="none" stroke="#F2A900" stroke-width="3.4" stroke-linejoin="round"/>
+          </svg>
+          <span class="brand-name">MT3<small>SEGURIDAD PRIVADA</small></span>
+        </a>
+        <p>Guardias intramuros, monitoreo, control de accesos y escoltas para empresas en la Ciudad de México y el Estado de México.</p>
+      </div>
+      <div>
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="#nosotros">Nosotros</a></li>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#sectores">Sectores</a></li>
+          <li><a href="#analisis">Análisis de riesgo</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="tel:+525620919982">562 091 9982</a></li>
+          <li><a href="https://wa.me/527203699224" target="_blank" rel="noopener">WhatsApp 720 369 9224</a></li>
+          <li><a href="mailto:seguridadprivadamt3@gmail.com">seguridadprivadamt3@gmail.com</a></li>
+          <li>CDMX y Estado de México</li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year"></span> MT3 Seguridad Privada · <a href="aviso-privacidad.html">Aviso de Privacidad</a></span>
+      <span class="motto">Analizamos · Prevenimos · Protegemos</span>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/527203699224" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/></svg>
+</a>
+
+<script>
+  // ===== Pantalla de carga =====
+  function hideLoader() {
+    document.getElementById("loader").classList.add("done");
+    document.body.classList.remove("loading");
+  }
+  window.addEventListener("load", function () { setTimeout(hideLoader, 900); });
+  setTimeout(hideLoader, 3000); // por si alguna imagen tarda demasiado
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // ===== Menú que se vuelve sólido + barra de progreso =====
+  var header = document.getElementById("top");
+  var progress = document.getElementById("progress");
+  function onScroll() {
+    var y = window.scrollY;
+    header.classList.toggle("solid", y > 40);
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.width = (max > 0 ? (y / max) * 100 : 0) + "%";
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // ===== Slider del banner =====
+  var hero = document.querySelector(".hero");
+  var slides = document.querySelectorAll(".slide");
+  var dots = document.querySelectorAll(".dot");
+  var cur = document.getElementById("cur");
+  var index = 0, timer = null;
+  var SLIDE_MS = 6500;
+
+  function show(i) {
+    index = (i + slides.length) % slides.length;
+    slides.forEach(function (s, n) { s.classList.toggle("active", n === index); });
+    dots.forEach(function (d, n) {
+      d.classList.remove("active");
+      void d.offsetWidth; // reinicia la animación de la barrita
+      if (n === index) d.classList.add("active");
+    });
+    cur.textContent = String(index + 1).padStart(2, "0");
+    restart();
+  }
+  function restart() {
+    clearTimeout(timer);
+    if (!hero.classList.contains("paused")) timer = setTimeout(function () { show(index + 1); }, SLIDE_MS);
+  }
+  document.getElementById("next").addEventListener("click", function () { show(index + 1); });
+  document.getElementById("prev").addEventListener("click", function () { show(index - 1); });
+  dots.forEach(function (d, n) { d.addEventListener("click", function () { show(n); }); });
+  hero.addEventListener("mouseenter", function () { hero.classList.add("paused"); clearTimeout(timer); });
+  hero.addEventListener("mouseleave", function () { hero.classList.remove("paused"); restart(); });
+
+  // Deslizar con el dedo en celular
+  var startX = null;
+  hero.addEventListener("touchstart", function (e) { startX = e.touches[0].clientX; }, { passive: true });
+  hero.addEventListener("touchend", function (e) {
+    if (startX === null) return;
+    var dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) show(index + (dx < 0 ? 1 : -1));
+    startX = null;
+  });
+  restart();
+
+  // ===== Aparición al hacer scroll (con escalonado) =====
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      var el = en.target;
+      var siblings = el.parentElement.querySelectorAll(":scope > .reveal");
+      var pos = Array.prototype.indexOf.call(siblings, el);
+      el.style.transitionDelay = (pos > 0 ? Math.min(pos, 6) * 0.1 : 0) + "s";
+      el.classList.add("in");
+      io.unobserve(el);
+    });
+  }, { threshold: .12 });
+  document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+
+  // ===== Contadores animados =====
+  var counterIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      var el = en.target, end = +el.dataset.count, t0 = null;
+      function step(t) {
+        if (!t0) t0 = t;
+        var p = Math.min((t - t0) / 1600, 1);
+        el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+      counterIO.unobserve(el);
+    });
+  }, { threshold: .5 });
+  document.querySelectorAll("[data-count]").forEach(function (el) { counterIO.observe(el); });
+
+  // ===== Formulario → WhatsApp (funciona sin servidor, ideal para GitHub Pages) =====
+  document.getElementById("form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var d = new FormData(this);
+    var texto =
+      "Hola, quiero solicitar un análisis de riesgo.\n" +
+      "Nombre: " + d.get("nombre") + "\n" +
+      "Empresa: " + d.get("empresa") + "\n" +
+      "Giro: " + d.get("giro") + "\n" +
+      "Zona: " + (d.get("zona") || "-") + "\n" +
+      "Me preocupa: " + (d.get("mensaje") || "-");
+    window.open("https://wa.me/527203699224?text=" + encodeURIComponent(texto), "_blank");
+  });
+</script>
+</body>
+</html>
